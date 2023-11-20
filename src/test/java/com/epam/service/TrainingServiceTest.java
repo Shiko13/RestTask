@@ -84,6 +84,8 @@ class TrainingServiceTest {
     @Test
     void save_invalidTrainee_shouldThrowAccessError() {
         User user = createUser();
+        String username = user.getUsername();
+        String password = user.getPassword();
         Trainee trainee = createTrainee();
 
         TrainingDtoInput trainingDtoInput = createTrainingDtoInput();
@@ -96,7 +98,7 @@ class TrainingServiceTest {
                 Optional.ofNullable(trainee));
 
         AccessException exception = assertThrows(AccessException.class,
-                () -> trainingService.save(user.getUsername(), user.getPassword(), trainingDtoInput),
+                () -> trainingService.save(username, password, trainingDtoInput),
                 "An AccessException should be thrown when the trainer does not exist");
 
         assertEquals("You don't have access for this.", exception.getMessage());
@@ -105,6 +107,8 @@ class TrainingServiceTest {
     @Test
     void save_invalidTrainer_shouldThrowAccessError() {
         User user = createUser();
+        String username = user.getUsername();
+        String password = user.getPassword();
 
         TrainingDtoInput trainingDtoInput = createTrainingDtoInput();
         Training savedTraining = createTraining(trainingDtoInput);
@@ -114,7 +118,7 @@ class TrainingServiceTest {
         when(authenticationService.checkAccess(user.getPassword(), user)).thenReturn(false);
 
         AccessException exception = assertThrows(AccessException.class,
-                () -> trainingService.save(user.getUsername(), user.getPassword(), trainingDtoInput),
+                () -> trainingService.save(username, password, trainingDtoInput),
                 "An AccessException should be thrown when the trainer does not exist");
 
         assertEquals("You don't have access for this.", exception.getMessage());

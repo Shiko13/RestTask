@@ -97,25 +97,27 @@ class UserServiceTest {
     @Test
     void switchActivate_WithIncorrectPassword_ShouldThrowAccessException() {
         String username = savedUser.getUsername();
+        UserActivateDtoInput userActivateDtoInput = new UserActivateDtoInput(true);
 
         when(userRepo.findByUsername(savedUser.getUsername())).thenReturn(Optional.of(savedUser));
         when(authenticationService.checkAccess("Incorrect password", savedUser)).thenReturn(true);
 
         AccessException exception = assertThrows(AccessException.class,
-                () -> userService.switchActivate(username, "Incorrect password", new UserActivateDtoInput(true)));
+                () -> userService.switchActivate(username, "Incorrect password", userActivateDtoInput));
         assertEquals("You don't have access for this.", exception.getMessage());
     }
 
     @Test
     void switchActivate_InvalidPassword_ThrowsAccessException() {
         String username = savedUser.getUsername();
+        UserActivateDtoInput userActivateDtoInput = new UserActivateDtoInput(true);
         String invalidPassword = "Invalid password";
 
         when(userRepo.findByUsername(username)).thenReturn(Optional.of(savedUser));
         when(authenticationService.checkAccess(invalidPassword, savedUser)).thenReturn(true);
 
         AccessException exception = assertThrows(AccessException.class,
-                () -> userService.switchActivate(username, invalidPassword, new UserActivateDtoInput(true)));
+                () -> userService.switchActivate(username, invalidPassword, userActivateDtoInput));
 
         verify(userRepo).findByUsername(username);
         verify(authenticationService).checkAccess(invalidPassword, savedUser);

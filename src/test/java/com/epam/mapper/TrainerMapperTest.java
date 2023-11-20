@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TrainerMapperTest {
+class TrainerMapperTest {
 
     private final TrainerMapper trainerMapper = new TrainerMapperImpl();
 
