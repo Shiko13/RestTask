@@ -10,11 +10,11 @@ public interface UserService {
 
     User save(UserDtoInput userDtoInput);
 
-    void changePassword(String userName, String oldPassword, String newPassword);
+    User changePassword(String username, String oldPassword, String newPassword);
 
-    void switchActivate(String userName, String password, UserActivateDtoInput userInput);
+    User switchActivate(String username, String password, UserActivateDtoInput userInput);
 
-    Optional<User> findUserByUsername(String userName);
+    Optional<User> findUserByUsername(String username);
 
-    void login(String userName, String password);
+    void login(String username, String password);
 }

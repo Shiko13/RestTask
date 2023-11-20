@@ -37,13 +37,13 @@ public class TrainingController {
     @GetMapping("/criteria-trainee")
     @ApiOperation(value = "Find trainings of trainee by date range and trainer's name")
     public List<TrainingForTraineeDtoOutput> findByDateRangeAndTrainee(TrainingTraineeFilter filter) {
-        return trainingService.findByDateRangeAndTraineeUserName(new TrainingTraineeSpecification(filter));
+        return trainingService.findByDateRangeAndTraineeUsername(new TrainingTraineeSpecification(filter));
     }
 
     @GetMapping("/criteria-trainer")
     @ApiOperation(value = "Find trainings of trainer by date range and trainee's name")
     public List<TrainingForTrainerDtoOutput> findByDateRangeAndTrainer(TrainingTrainerFilter filter) {
-        return trainingService.findByDateRangeAndTrainerUserName(new TrainingTrainerSpecification(filter));
+        return trainingService.findByDateRangeAndTrainerUsername(new TrainingTrainerSpecification(filter));
     }
 
     @PostMapping()

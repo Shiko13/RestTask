@@ -42,10 +42,10 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @Transactional
-    public void save(String username, String password, TrainingDtoInput trainingDtoInput) {
+    public Training save(String username, String password, TrainingDtoInput trainingDtoInput) {
         log.info("save, trainingDtoInput = {}", trainingDtoInput);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         Training trainingToSave = trainingMapper.toEntity(trainingDtoInput);
@@ -59,14 +59,14 @@ public class TrainingServiceImpl implements TrainingService {
         trainingToSave.setTrainee(trainee);
         trainingToSave.setTrainer(trainer);
 
-        trainingRepo.save(trainingToSave);
+        return trainingRepo.save(trainingToSave);
     }
 
     @Override
-    public List<TrainingForTraineeDtoOutput> findByDateRangeAndTraineeUserName(
+    public List<TrainingForTraineeDtoOutput> findByDateRangeAndTraineeUsername(
             TrainingTraineeSpecification specification) {
 
-        log.info("findByDateRangeAndTraineeUserName, specification = {}", specification);
+        log.info("findByDateRangeAndTraineeUsername, specification = {}", specification);
 
         List<Training> trainings = trainingRepo.findAll(specification);
 
@@ -74,17 +74,17 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public List<TrainingForTrainerDtoOutput> findByDateRangeAndTrainerUserName(
+    public List<TrainingForTrainerDtoOutput> findByDateRangeAndTrainerUsername(
             TrainingTrainerSpecification specification) {
-        log.info("findByDateRangeAndTrainerUserName, specification = {}", specification);
+        log.info("findByDateRangeAndTrainerUsername, specification = {}", specification);
 
         List<Training> trainings = trainingRepo.findAll(specification);
 
         return trainingMapper.toTrainingForTrainerDtoList(trainings);
     }
 
-    private User getUserByUserName(String userName) {
-        return userService.findUserByUsername(userName)
+    private User getUserByUsername(String username) {
+        return userService.findUserByUsername(username)
                           .orElseThrow(() -> new NotFoundException(ErrorMessageConstants.NOT_FOUND_MESSAGE));
     }
 

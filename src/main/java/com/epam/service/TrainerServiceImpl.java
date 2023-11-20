@@ -63,9 +63,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerDtoOutput getByUsername(String username, String password) {
-        log.info("getByUserName, userName = {}", username);
+        log.info("getByUserName, username = {}", username);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         Trainer trainer = trainerRepo.findByUserId(user.getId())
@@ -78,9 +78,9 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional
     public TrainerUpdateDtoOutput updateProfile(String username, String password,
                                                 TrainerProfileDtoInput trainerDtoInput) {
-        log.info("updateProfile, userName = {}", username);
+        log.info("updateProfile, username = {}", username);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         Trainer trainer = trainerRepo.findByUserId(user.getId())
@@ -103,7 +103,7 @@ public class TrainerServiceImpl implements TrainerService {
     public List<TrainerForTraineeDtoOutput> getTrainersWithEmptyTrainees(String username, String password) {
         log.info("getTrainersWithEmptyTrainees");
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         List<Trainer> trainers = trainerRepo.findByTraineesIsEmptyAndUserIsActiveTrue();
@@ -115,8 +115,8 @@ public class TrainerServiceImpl implements TrainerService {
         return trainers.stream().map(trainerMapper::toTrainerForTraineeDtoOutput).toList();
     }
 
-    private User getUserByUserName(String userName) {
-        return userService.findUserByUsername(userName)
+    private User getUserByUsername(String username) {
+        return userService.findUserByUsername(username)
                           .orElseThrow(() -> new NotFoundException(ErrorMessageConstants.NOT_FOUND_MESSAGE));
     }
 

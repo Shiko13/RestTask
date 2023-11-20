@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Validated
@@ -31,8 +32,9 @@ public class TrainerController {
     private final TrainerService trainerService;
 
     @GetMapping("/username")
-    @ApiOperation("Get trainer by UserName")
-    public TrainerDtoOutput getProfile(@RequestParam String username, @RequestParam String password) {
+    @ApiOperation("Get trainer by username")
+    public TrainerDtoOutput getProfile(@RequestParam @Pattern(regexp = ".*[a-zA-Z]+\\.+[a-zA-Z]+.*",
+                                                              message = "Invalid input format") String username, @RequestParam String password) {
         return trainerService.getByUsername(username, password);
     }
 

@@ -36,55 +36,55 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String userName, String oldPassword, String newPassword) {
-        log.info("changePassword, userName = {}", userName);
-        User user = getUserByUserName(userName);
+    public User changePassword(String username, String oldPassword, String newPassword) {
+        log.info("changePassword, username = {}", username);
+        User user = getUserByUsername(username);
 
         if (authenticationService.checkAccess(oldPassword, user)) {
             throw new AccessException(ErrorMessageConstants.ACCESS_ERROR_MESSAGE);
         }
 
         user.setPassword(newPassword);
-        userRepo.save(user);
+        return userRepo.save(user);
     }
 
     @Override
-    public void switchActivate(String userName, String password, UserActivateDtoInput userInput) {
-        log.info("switchActivate, userName = {}", userName);
+    public User switchActivate(String username, String password, UserActivateDtoInput userInput) {
+        log.info("switchActivate, username = {}", username);
 
-        User user = getUserByUserName(userName);
+        User user = getUserByUsername(username);
         if (authenticationService.checkAccess(password, user)) {
             throw new AccessException(ErrorMessageConstants.ACCESS_ERROR_MESSAGE);
         }
 
         user.setIsActive(userInput.getIsActive());
-        userRepo.save(user);
+        return userRepo.save(user);
     }
 
     @Override
-    public Optional<User> findUserByUsername(String userName) {
-        if (userName.matches(".+-\\d$")) {
-            String[] parts = userName.split("-");
+    public Optional<User> findUserByUsername(String username) {
+        if (Character.isDigit(username.charAt(username.length() - 1))) {
+            String[] parts = username.split("-");
             String userNameWithPostfix = parts[0].trim();
             Integer postfix = Integer.valueOf(parts[1]);
             return userRepo.findByUsernameAndPostfix(userNameWithPostfix, postfix);
-        } else {
-            return userRepo.findByUsernameAndPostfix(userName, 0);
         }
+
+        return userRepo.findByUsernameAndPostfix(username, 0);
     }
 
     @Override
-    public void login(String userName, String password) {
-        log.info("changePassword, userName = {}", userName);
-        User user = getUserByUserName(userName);
+    public void login(String username, String password) {
+        log.info("changePassword, userName = {}", username);
+        User user = getUserByUsername(username);
 
         if (authenticationService.checkAccess(password, user)) {
             throw new AccessException(ErrorMessageConstants.ACCESS_ERROR_MESSAGE);
         }
     }
 
-    private User getUserByUserName(String userName) {
-        return userRepo.findByUsername(userName)
+    private User getUserByUsername(String username) {
+        return userRepo.findByUsername(username)
                        .orElseThrow(() -> new AccessException(ErrorMessageConstants.ACCESS_ERROR_MESSAGE));
     }
 
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         String userName = userDtoInput.getFirstName().toLowerCase() + "." + userDtoInput.getLastName().toLowerCase();
         Integer maxPostfix = 0;
 
-        if (isUserNameExistsInDatabase(userName)) {
+        if (isUsernameExistsInDatabase(userName)) {
             maxPostfix = userRepo.findMaxPostfixByUsername(userName);
             maxPostfix++;
         }
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public boolean isUserNameExistsInDatabase(String userName) {
-        return userRepo.existsByUsername(userName);
+    public boolean isUsernameExistsInDatabase(String username) {
+        return userRepo.existsByUsername(username);
     }
 }

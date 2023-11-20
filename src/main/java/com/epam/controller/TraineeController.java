@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.constraints.Pattern;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +38,9 @@ public class TraineeController {
 
     @GetMapping("/username")
     @ApiOperation("Get trainee profile by username")
-    public TraineeDtoOutput getProfile(@RequestParam String username, @RequestParam String password) {
+    public TraineeDtoOutput getProfile(@RequestParam @Pattern(regexp = ".*[a-zA-Z]+\\.+[a-zA-Z]+.*",
+                                                              message = "Invalid input format") String username,
+                                       @RequestParam String password) {
         return traineeService.getByUsername(username, password);
     }
 

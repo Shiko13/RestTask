@@ -58,9 +58,9 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public TraineeDtoOutput getByUsername(String username, String password) {
-        log.info("getByUserName, userName = {}", username);
+        log.info("getByUsername, username = {}", username);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         Trainee trainee = traineeRepo.findByUserId(user.getId())
@@ -71,11 +71,11 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public TraineeUpdateDtoOutput updateProfile(String userName, String password,
+    public TraineeUpdateDtoOutput updateProfile(String username, String password,
                                                 TraineeProfileDtoInput traineeDtoInput) {
         log.info("updateProfile, traineeDtoInput = {}", traineeDtoInput);
 
-        User user = getUserByUserName(userName);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         Trainee trainee = traineeRepo.findByUserId(user.getId())
@@ -93,7 +93,7 @@ public class TraineeServiceImpl implements TraineeService {
                                                         TraineeUpdateListDtoInput traineeDtoInput) {
         log.info("updateTrainerList, traineeDtoInput = {}", traineeDtoInput);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         List<Trainer> selectedTrainers = trainerRepo.findAllByUser_UsernameIn(traineeDtoInput.getTrainersList());
@@ -109,16 +109,16 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void deleteByUsername(String username, String password) {
-        log.info("deleteByUsername, userName = {}", username);
+        log.info("deleteByUsername, username = {}", username);
 
-        User user = getUserByUserName(username);
+        User user = getUserByUsername(username);
         authenticate(password, user);
 
         traineeRepo.deleteById(user.getId());
     }
 
-    private User getUserByUserName(String userName) {
-        return userService.findUserByUsername(userName)
+    private User getUserByUsername(String username) {
+        return userService.findUserByUsername(username)
                           .orElseThrow(() -> new AccessException(ErrorMessageConstants.ACCESS_ERROR_MESSAGE));
     }
 
