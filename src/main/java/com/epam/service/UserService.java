@@ -10,9 +10,9 @@ public interface UserService {
 
     User save(UserDtoInput userDtoInput);
 
-    User changePassword(String username, String oldPassword, String newPassword);
+    void changePassword(String username, String oldPassword, String newPassword);
 
-    User switchActivate(String username, String password, UserActivateDtoInput userInput);
+    void switchActivate(String username, String password, UserActivateDtoInput userInput);
 
     Optional<User> findUserByUsername(String username);
 

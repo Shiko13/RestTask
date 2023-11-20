@@ -1,14 +1,19 @@
 package com.epam.controller;
 
+import com.epam.error.AccessException;
+import com.epam.model.dto.UserActivateDtoInput;
 import com.epam.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -19,43 +24,80 @@ class UserControllerTest {
     @Mock
     private UserService userService;
 
-//    @Test
-//    void changePassword_ShouldReturnUserDtoOutput() {
-//        String userName = "testUser";
-//        String oldPassword = "oldPassword";
-//        String newPassword = "newPassword";
-//
-//        UserDtoOutput expectedUserOutput = createUserDtoOutput();
-//
-//        when(userService.changePassword(userName, oldPassword, newPassword)).thenReturn(expectedUserOutput);
-//
-//        UserDtoOutput result = userController.changePassword(userName, oldPassword, newPassword);
-//
-//        assertNotNull(result);
-//        assertEquals(expectedUserOutput, result);
-//    }
-//
-//    @Test
-//    void switchActivate_ShouldReturnTraineeDtoOutput() {
-//        String userName = "testUser";
-//        String password = "testPassword";
-//        UserDtoOutput expectedOutput = createUserDtoOutput();
-//
-//        when(userService.switchActivate(userName, password)).thenReturn(expectedOutput);
-//
-//        UserDtoOutput result = userController.switchActivate(userName, password);
-//
-//        assertNotNull(result);
-//        assertEquals(expectedOutput, result);
-//    }
-//
-//    private UserDtoOutput createUserDtoOutput() {
-//        return UserDtoOutput.builder()
-//                            .id(1L)
-//                            .firstName("John")
-//                            .lastName("Doe")
-//                            .userName("john.doe")
-//                            .isActive(true)
-//                            .build();
-//    }
+    @Test
+    void login_shouldOk() {
+        String username = "testUser";
+        String password = "testPassword";
+
+        doNothing().when(userService).login(username, password);
+
+        userController.login(username, password);
+
+        verify(userService).login(username, password);
+    }
+
+    @Test
+    void login_ShouldThrowAccessException() {
+        String username = "testUser";
+        String password = "testPassword";
+
+        doThrow(AccessException.class).when(userService).login(username, password);
+
+        assertThrows(ResponseStatusException.class, () -> userController.login(username, password));
+
+        verify(userService).login(username, password);
+    }
+
+    @Test
+    void changePassword_ShouldOk() {
+        String username = "testUser";
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+
+        doNothing().when(userService).changePassword(username, oldPassword, newPassword);
+
+        userController.changePassword(username, oldPassword, newPassword);
+
+        verify(userService).changePassword(username, oldPassword, newPassword);
+    }
+
+    @Test
+    void changePassword_ShouldThrowAccessException() {
+        String username = "testUser";
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+
+        doThrow(AccessException.class).when(userService).changePassword(username, oldPassword, newPassword);
+
+        assertThrows(ResponseStatusException.class,
+                () -> userController.changePassword(username, oldPassword, newPassword));
+
+        verify(userService).changePassword(username, oldPassword, newPassword);
+    }
+
+    @Test
+    void switchActivate_ShouldOk() {
+        String username = "testUser";
+        String password = "testPassword";
+        UserActivateDtoInput userInput = new UserActivateDtoInput(true);
+
+        doNothing().when(userService).switchActivate(username, password, userInput);
+
+        userController.switchActivate(username, password, userInput);
+
+        verify(userService).switchActivate(username, password, userInput);
+    }
+
+    @Test
+    void switchActivate_ShouldThrowAccessException() {
+        String username = "testUser";
+        String password = "testPassword";
+        UserActivateDtoInput userInput = new UserActivateDtoInput(true);
+
+        doThrow(AccessException.class).when(userService).switchActivate(username, password, userInput);
+
+        assertThrows(ResponseStatusException.class, () -> userController.switchActivate(username, password, userInput));
+
+        verify(userService).switchActivate(username, password, userInput);
+    }
 }

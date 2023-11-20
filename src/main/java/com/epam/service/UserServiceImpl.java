@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changePassword(String username, String oldPassword, String newPassword) {
+    public void changePassword(String username, String oldPassword, String newPassword) {
         log.info("changePassword, username = {}", username);
         User user = getUserByUsername(username);
 
@@ -45,11 +45,11 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(newPassword);
-        return userRepo.save(user);
+        userRepo.save(user);
     }
 
     @Override
-    public User switchActivate(String username, String password, UserActivateDtoInput userInput) {
+    public void switchActivate(String username, String password, UserActivateDtoInput userInput) {
         log.info("switchActivate, username = {}", username);
 
         User user = getUserByUsername(username);
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setIsActive(userInput.getIsActive());
-        return userRepo.save(user);
+        userRepo.save(user);
     }
 
     @Override
