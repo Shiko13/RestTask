@@ -1,13 +1,12 @@
 package com.epam.controller;
 
-import com.epam.error.AccessException;
 import com.epam.model.dto.TraineeDtoInput;
 import com.epam.model.dto.TraineeDtoOutput;
 import com.epam.model.dto.TraineeProfileDtoInput;
 import com.epam.model.dto.TraineeSaveDtoOutput;
 import com.epam.model.dto.TraineeUpdateDtoOutput;
-import com.epam.model.dto.TraineeUpdateListDtoInput;
 import com.epam.model.dto.TraineeUpdateListDtoOutput;
+import com.epam.model.dto.TrainerShortDtoInput;
 import com.epam.service.TraineeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Validated
 @RestController
@@ -38,9 +37,9 @@ public class TraineeController {
 
     @GetMapping("/username")
     @ApiOperation("Get trainee profile by username")
-    public TraineeDtoOutput getProfile(@RequestParam @Pattern(regexp = ".*[a-zA-Z]+\\.+[a-zA-Z]+.*",
-                                                              message = "Invalid input format") String username,
-                                       @RequestParam String password) {
+    public TraineeDtoOutput getProfile(
+            @RequestParam @Pattern(regexp = "[a-zA-Z]+\\.[\\w-]+", message = "Invalid input format") String username,
+            @RequestParam String password) {
         return traineeService.getByUsername(username, password);
     }
 
@@ -59,19 +58,15 @@ public class TraineeController {
 
     @PutMapping("/trainer-list")
     @ApiOperation("Update trainee's trainer list")
-    public TraineeUpdateListDtoOutput updateTrainerList(@RequestParam String username, @RequestParam String password,
-                                                        @RequestBody TraineeUpdateListDtoInput traineeDtoInput) {
-        return traineeService.updateTrainerList(username, password, traineeDtoInput);
+    public TraineeUpdateListDtoOutput updateTrainerList(@RequestParam String username, @RequestParam String password, @RequestParam String traineeName,
+                                                        @RequestBody List<TrainerShortDtoInput> trainersUsernames) {
+        return traineeService.updateTrainerList(username, password, traineeName, trainersUsernames);
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Delete trainee by username")
     public void deleteByUsername(@RequestParam String username, @RequestParam String password) {
-        try {
-            traineeService.deleteByUsername(username, password);
-        } catch (AccessException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        traineeService.deleteByUsername(username, password);
     }
 }

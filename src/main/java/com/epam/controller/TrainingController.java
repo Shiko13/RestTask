@@ -1,6 +1,5 @@
 package com.epam.controller;
 
-import com.epam.error.AccessException;
 import com.epam.model.dto.TrainingDtoInput;
 import com.epam.model.dto.TrainingForTraineeDtoOutput;
 import com.epam.model.dto.TrainingForTrainerDtoOutput;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -49,11 +47,8 @@ public class TrainingController {
     @PostMapping()
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Save Training", notes = "Create a new training based on the provided input.")
-    public void save(@RequestParam String username, @RequestParam String password, @RequestBody TrainingDtoInput trainingDtoInput) {
-        try {
-            trainingService.save(username, password, trainingDtoInput);
-        } catch (AccessException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+    public void save(@RequestParam String username, @RequestParam String password,
+                     @RequestBody TrainingDtoInput trainingDtoInput) {
+        trainingService.save(username, password, trainingDtoInput);
     }
 }

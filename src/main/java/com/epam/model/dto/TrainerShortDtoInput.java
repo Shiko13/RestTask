@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -15,7 +15,8 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TraineeUpdateListDtoInput {
+public class TrainerShortDtoInput {
 
-    List<String> trainersList;
+    @NotBlank
+    private String username;
 }

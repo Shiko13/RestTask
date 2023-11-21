@@ -6,9 +6,9 @@ import com.epam.model.dto.TraineeDtoOutput;
 import com.epam.model.dto.TraineeProfileDtoInput;
 import com.epam.model.dto.TraineeSaveDtoOutput;
 import com.epam.model.dto.TraineeUpdateDtoOutput;
-import com.epam.model.dto.TraineeUpdateListDtoInput;
 import com.epam.model.dto.TraineeUpdateListDtoOutput;
 import com.epam.model.dto.TrainerForTraineeDtoOutput;
+import com.epam.model.dto.TrainerShortDtoInput;
 import com.epam.model.dto.TrainingTypeShortOutputDto;
 import com.epam.service.TraineeService;
 import org.junit.jupiter.api.Test;
@@ -17,15 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,12 +86,12 @@ class TraineeControllerTest {
     void updateTrainerList_ShouldReturnTraineeDtoOutput() {
         String username = "testUser";
         String password = "testPassword";
-        TraineeUpdateListDtoInput traineeDtoInput = createTraineeUpdateListDtoInput();
+        List<TrainerShortDtoInput> trainersUsernames = createTrainersUsernamesList();
         TraineeUpdateListDtoOutput expectedOutput = createTraineeUpdateListDtoOutput();
 
-        when(traineeService.updateTrainerList(username, password, traineeDtoInput)).thenReturn(expectedOutput);
+        when(traineeService.updateTrainerList(username, password, username, trainersUsernames)).thenReturn(expectedOutput);
 
-        TraineeUpdateListDtoOutput result = traineeController.updateTrainerList(username, password, traineeDtoInput);
+        TraineeUpdateListDtoOutput result = traineeController.updateTrainerList(username, password, username, trainersUsernames);
 
         assertNotNull(result);
         assertEquals(expectedOutput, result);
@@ -111,20 +110,18 @@ class TraineeControllerTest {
     }
 
     @Test
-    void deleteByUsername_ShouldThrowRSE() {
+    void deleteByUsername_ShouldThrowAccessException() {
         String username = "testUser";
         String password = "testPassword";
 
-        Mockito.doThrow(new AccessException("Unauthorized access"))
+        Mockito.doThrow(new AccessException("You don't have access for this."))
                .when(traineeService)
                .deleteByUsername(username, password);
 
-        try {
-            traineeController.deleteByUsername(username, password);
-            fail("Expected ResponseStatusException not thrown");
-        } catch (ResponseStatusException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-        }
+        AccessException exception =
+                assertThrows(AccessException.class, () -> traineeController.deleteByUsername(username, password));
+
+        assertEquals("You don't have access for this.", exception.getMessage());
     }
 
     public TraineeDtoInput createTestTraineeDtoInput() {
@@ -141,8 +138,11 @@ class TraineeControllerTest {
                                      .build();
     }
 
-    public TraineeUpdateListDtoInput createTraineeUpdateListDtoInput() {
-        return TraineeUpdateListDtoInput.builder().trainersList(List.of("john.smith", "michel.past")).build();
+    public List<TrainerShortDtoInput> createTrainersUsernamesList() {
+        List<TrainerShortDtoInput> trainers = new ArrayList<>();
+        trainers.add(new TrainerShortDtoInput("john.smith"));
+        trainers.add(new TrainerShortDtoInput("michel.past"));
+        return trainers;
     }
 
     public TraineeDtoOutput createExpectedTraineeDtoOutput() {

@@ -12,9 +12,9 @@ import com.epam.model.dto.TraineeDtoOutput;
 import com.epam.model.dto.TraineeProfileDtoInput;
 import com.epam.model.dto.TraineeSaveDtoOutput;
 import com.epam.model.dto.TraineeUpdateDtoOutput;
-import com.epam.model.dto.TraineeUpdateListDtoInput;
 import com.epam.model.dto.TraineeUpdateListDtoOutput;
 import com.epam.model.dto.TrainerForTraineeDtoOutput;
+import com.epam.model.dto.TrainerShortDtoInput;
 import com.epam.model.dto.TrainingTypeShortOutputDto;
 import com.epam.model.dto.UserDtoInput;
 import com.epam.repo.TraineeRepo;
@@ -162,17 +162,17 @@ class TraineeServiceTest {
     @Test
     void updateTrainerList_WithValidInput_ShouldUpdateTrainerList() {
         List<Trainer> updatedTrainers = createUpdatedSelectedTrainers();
-        TraineeUpdateListDtoInput traineeUpdateDtoOutput = toTraineeUpdateListDtoInput(traineeToSave);
+        List<TrainerShortDtoInput> trainersUsernames = toTrainersUsernames(traineeToSave);
 
         traineeToSave.setTrainers(updatedTrainers);
 
-        when(traineeRepo.findByUserId(user.getId())).thenReturn(Optional.of(traineeToSave));
+        when(traineeRepo.findByUser_Username(user.getUsername())).thenReturn(Optional.of(traineeToSave));
         when(traineeRepo.save(any(Trainee.class))).thenReturn(traineeToSave);
         when(userService.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(traineeMapper.toTraineeUpdateListDtoOutput(traineeToSave)).thenReturn(traineeUpdateListDtoOutput);
 
         TraineeUpdateListDtoOutput result =
-                traineeService.updateTrainerList(user.getUsername(), user.getPassword(), traineeUpdateDtoOutput);
+                traineeService.updateTrainerList(user.getUsername(), user.getPassword(), user.getUsername(), trainersUsernames);
 
         assertNotNull(result);
 //        assertEquals(updatedTrainerIds, savedTrainee.getTrainerIds());
@@ -204,7 +204,7 @@ class TraineeServiceTest {
     @Test
     void authenticate_MismatchedIds_AccessExceptionThrown() {
         String password = user.getPassword();
-        traineeDtoInput.setId(user.getId() + 1);
+        user.setId(user.getId() + 1);
 
         when(authenticationService.checkAccess(password, user)).thenReturn(true);
 
@@ -242,7 +242,6 @@ class TraineeServiceTest {
 
     public TraineeDtoInput createTraineeDtoInput(User user) {
         return TraineeDtoInput.builder()
-                              .id(user.getId())
                               .dateOfBirth(LocalDate.of(1985, 5, 7))
                               .address("Common street 53")
                               .firstName(user.getFirstName())
@@ -374,13 +373,12 @@ class TraineeServiceTest {
                                      .build();
     }
 
-    public TraineeUpdateListDtoInput toTraineeUpdateListDtoInput(Trainee trainee) {
-        return TraineeUpdateListDtoInput.builder()
-                                        .trainersList(trainee.getTrainers()
-                                                             .stream()
-                                                             .map(t -> t.getUser().getUsername())
-                                                             .collect(Collectors.toList()))
-                                        .build();
+    public List<TrainerShortDtoInput> toTrainersUsernames(Trainee trainee) {
+        return trainee.getTrainers().stream().map(this::toTrainerShortDtoInput).collect(Collectors.toList());
+    }
+
+    private TrainerShortDtoInput toTrainerShortDtoInput(Trainer trainer) {
+        return new TrainerShortDtoInput(trainer.getUser().getUsername());
     }
 
     public TraineeUpdateListDtoOutput createTraineeUpdateListDtoOutput(Trainee trainee) {

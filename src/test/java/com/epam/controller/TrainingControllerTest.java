@@ -15,19 +15,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,21 +97,19 @@ class TrainingControllerTest {
     }
 
     @Test
-    void save_ShouldThrowRSE() {
+    void save_ShouldThrowAccessException() {
         String username = "maria.dallas";
         String password = "password";
         TrainingDtoInput trainingDtoInput = createTestTrainingDtoInput();
 
-        Mockito.doThrow(new AccessException("Unauthorized access"))
+        Mockito.doThrow(new AccessException("You don't have access for this."))
                .when(trainingService)
                .save(username, password, trainingDtoInput);
 
-        try {
-            trainingController.save(username, password, trainingDtoInput);
-            fail("Expected ResponseStatusException not thrown");
-        } catch (ResponseStatusException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-        }
+        AccessException exception = assertThrows(AccessException.class,
+                () -> trainingController.save(username, password, trainingDtoInput));
+
+        assertEquals("You don't have access for this.", exception.getMessage());
     }
 
     private List<TrainingForTraineeDtoOutput> createTrainingForTraineeDtoOutputList() {

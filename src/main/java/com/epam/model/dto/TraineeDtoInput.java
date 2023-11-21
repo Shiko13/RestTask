@@ -19,8 +19,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TraineeDtoInput {
 
-    private Long id;
-
     @NotBlank
     @Size(max = 255)
     private String firstName;

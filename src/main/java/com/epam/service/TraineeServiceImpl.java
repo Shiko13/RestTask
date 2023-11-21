@@ -12,8 +12,8 @@ import com.epam.model.dto.TraineeDtoOutput;
 import com.epam.model.dto.TraineeProfileDtoInput;
 import com.epam.model.dto.TraineeSaveDtoOutput;
 import com.epam.model.dto.TraineeUpdateDtoOutput;
-import com.epam.model.dto.TraineeUpdateListDtoInput;
 import com.epam.model.dto.TraineeUpdateListDtoOutput;
+import com.epam.model.dto.TrainerShortDtoInput;
 import com.epam.model.dto.UserDtoInput;
 import com.epam.repo.TraineeRepo;
 import com.epam.repo.TrainerRepo;
@@ -45,7 +45,6 @@ public class TraineeServiceImpl implements TraineeService {
         log.info("save, traineeDtoInput = {}", traineeDtoInput);
 
         User user = userService.save(new UserDtoInput(traineeDtoInput.getFirstName(), traineeDtoInput.getLastName()));
-        traineeDtoInput.setId(user.getId());
 
         Trainee traineeToSave = traineeMapper.toEntity(traineeDtoInput);
         traineeToSave.setUser(user);
@@ -89,15 +88,16 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public TraineeUpdateListDtoOutput updateTrainerList(String username, String password,
-                                                        TraineeUpdateListDtoInput traineeDtoInput) {
-        log.info("updateTrainerList, traineeDtoInput = {}", traineeDtoInput);
+    public TraineeUpdateListDtoOutput updateTrainerList(String username, String password, String traineeName,
+                                                        List<TrainerShortDtoInput> trainersUsernames) {
+        log.info("updateTrainerList, trainersUsernames = {}", trainersUsernames);
 
         User user = getUserByUsername(username);
         authenticate(password, user);
 
-        List<Trainer> selectedTrainers = trainerRepo.findAllByUser_UsernameIn(traineeDtoInput.getTrainersList());
-        Trainee trainee = traineeRepo.findByUserId(user.getId())
+        List<Trainer> selectedTrainers = trainerRepo.findAllByUser_UsernameIn(
+                trainersUsernames.stream().map(TrainerShortDtoInput::getUsername).toList());
+        Trainee trainee = traineeRepo.findByUser_Username(traineeName)
                                      .orElseThrow(() -> new NotFoundException(ErrorMessageConstants.NOT_FOUND_MESSAGE));
         trainee.setTrainers(selectedTrainers);
 

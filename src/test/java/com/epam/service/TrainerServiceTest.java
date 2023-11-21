@@ -223,7 +223,7 @@ class TrainerServiceTest {
     @Test
     void authenticate_MismatchedIds_AccessExceptionThrown() {
         String password = user.getPassword();
-        trainerDtoInput.setId(user.getId() + 1);
+        user.setId(user.getId() + 1);
 
         when(authenticationService.checkAccess(password, user)).thenReturn(true);
 
@@ -261,7 +261,6 @@ class TrainerServiceTest {
 
     public TrainerDtoInput createTrainerDtoInput(User user) {
         return TrainerDtoInput.builder()
-                              .id(user.getId())
                               .specialization(1L)
                               .firstName(user.getFirstName())
                               .lastName(user.getLastName())
@@ -270,7 +269,6 @@ class TrainerServiceTest {
 
     public TrainerDtoInput createUpdatedTrainerDtoInput(User user) {
         return TrainerDtoInput.builder()
-                              .id(user.getId())
                               .specialization(2L)
                               .firstName(user.getFirstName())
                               .lastName(user.getLastName())

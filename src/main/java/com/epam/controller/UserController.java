@@ -1,6 +1,5 @@
 package com.epam.controller;
 
-import com.epam.error.AccessException;
 import com.epam.model.dto.UserActivateDtoInput;
 import com.epam.service.UserService;
 import io.swagger.annotations.Api;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @Validated
 @RestController
@@ -31,11 +29,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "User login", notes = "Authenticate user with provided credentials and return a response")
     public void login(@RequestParam String username, @RequestParam String password) {
-        try {
-            userService.login(username, password);
-        } catch (AccessException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        userService.login(username, password);
     }
 
     @PutMapping("/password")
@@ -44,11 +38,7 @@ public class UserController {
                   notes = "Change user password based on provided credentials and new password")
     public void changePassword(@RequestParam String username, @RequestParam String oldPassword,
                                @RequestParam String newPassword) {
-        try {
-            userService.changePassword(username, oldPassword, newPassword);
-        } catch (AccessException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        userService.changePassword(username, oldPassword, newPassword);
     }
 
     @PatchMapping("/activate")
@@ -56,10 +46,6 @@ public class UserController {
     @ApiOperation(value = "Switch user activity")
     public void switchActivate(@RequestParam String username, @RequestParam String password,
                                @RequestBody UserActivateDtoInput userInput) {
-        try {
-            userService.switchActivate(username, password, userInput);
-        } catch (AccessException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        userService.switchActivate(username, password, userInput);
     }
 }

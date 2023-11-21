@@ -46,7 +46,6 @@ public class TrainerServiceImpl implements TrainerService {
         log.info("save, trainerDtoInput = {}", trainerDtoInput);
 
         User user = userService.save(new UserDtoInput(trainerDtoInput.getFirstName(), trainerDtoInput.getLastName()));
-        trainerDtoInput.setId(user.getId());
 
         TrainingType trainingType = trainingTypeRepo.findById(trainerDtoInput.getSpecialization())
                                                     .orElseThrow(() -> new AccessException(

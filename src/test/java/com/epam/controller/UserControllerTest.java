@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -43,7 +42,7 @@ class UserControllerTest {
 
         doThrow(AccessException.class).when(userService).login(username, password);
 
-        assertThrows(ResponseStatusException.class, () -> userController.login(username, password));
+        assertThrows(AccessException.class, () -> userController.login(username, password));
 
         verify(userService).login(username, password);
     }
@@ -69,8 +68,7 @@ class UserControllerTest {
 
         doThrow(AccessException.class).when(userService).changePassword(username, oldPassword, newPassword);
 
-        assertThrows(ResponseStatusException.class,
-                () -> userController.changePassword(username, oldPassword, newPassword));
+        assertThrows(AccessException.class, () -> userController.changePassword(username, oldPassword, newPassword));
 
         verify(userService).changePassword(username, oldPassword, newPassword);
     }
@@ -96,7 +94,7 @@ class UserControllerTest {
 
         doThrow(AccessException.class).when(userService).switchActivate(username, password, userInput);
 
-        assertThrows(ResponseStatusException.class, () -> userController.switchActivate(username, password, userInput));
+        assertThrows(AccessException.class, () -> userController.switchActivate(username, password, userInput));
 
         verify(userService).switchActivate(username, password, userInput);
     }

@@ -139,7 +139,7 @@ class TrainerControllerTest {
 
 
     private TrainerDtoInput createTestTrainerDtoInput() {
-        return TrainerDtoInput.builder().id(1L).firstName("Monica").lastName("Chandler").specialization(1L).build();
+        return TrainerDtoInput.builder().firstName("Monica").lastName("Chandler").specialization(1L).build();
     }
 
     private TrainerSaveDtoOutput toTrainerSaveDtoOutput() {

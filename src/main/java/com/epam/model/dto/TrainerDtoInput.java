@@ -19,8 +19,6 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class TrainerDtoInput {
 
-    private Long id;
-
     @NotBlank
     @Size(max = 255)
     private String firstName;
